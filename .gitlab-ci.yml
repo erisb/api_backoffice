@@ -1,0 +1,38 @@
+image: registry.gitlab.com/hijrah_apps/backend_hijrahapps:latest
+stages:
+  - test
+  - deploy
+unit_test:
+  stage: test
+  script:
+    - composer install
+    - php artisan key:generate
+deploy_staging:
+  stage: deploy
+  script:
+    - 'which ssh-agent || ( yum -y update && yum install openssh-client -y )'
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$alicloud_cicd")
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ~/.composer/vendor/bin/envoy run deploy --env=development
+  environment:
+    name: staging
+    url: http://149.129.220.30
+  only:
+    - development
+deploy_production:
+  stage: deploy
+  script:
+    - 'which ssh-agent || ( yum -y update && yum install openssh-client -y )'
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$alicloud_cicd")
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - ~/.composer/vendor/bin/envoy run deploy --env=production
+  environment:
+    name: production
+    url: http://149.129.224.120
+  when: manual
+  only:
+    - master

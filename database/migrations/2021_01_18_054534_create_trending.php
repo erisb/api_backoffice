@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateTrending extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('trendings', function (Blueprint $collection) {
+            $collection->id();
+            $collection->string('categoryId');
+            $collection->string('titleTrending');
+            $collection->string('contentTrending');
+            $collection->string('imageTrending');
+            $collection->string('totalViewerTrending');
+            $collection->string('publishTrending');
+            $collection->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('trendings');
+    }
+}
